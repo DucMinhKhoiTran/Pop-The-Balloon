@@ -1,25 +1,43 @@
 // Select all balloons
-const balloons = document.querySelectorAll('.balloon');
-let poppedBalloons = 0; // Track number of popped balloons
-let startTime; // Track start time of the game
-let speedMultiplier = 1; // Speed multiplier for balloon movement
+const numberOfBalloons = 10; // Increase the number of balloons
+    const popSound = document.getElementById('popSound');
+    const highScoreElement = document.getElementById('highScoreValue');
+    let highScore = localStorage.getItem('highScore') || null; // Retrieve high score from localStorage
+    let balloons = [];
+    let poppedBalloons = 0;
+    let startTime;
+    let speedMultiplier = 1;
 
-// Initialize balloon positions and movement
-function startGame() {
-  startTime = Date.now(); // Record the start time of the game
+    if (highScore) {
+      highScoreElement.textContent = highScore;
+    }
 
-  balloons.forEach(balloon => {
-    // Set initial random positions for the balloons
-    balloon.style.top = Math.random() * (window.innerHeight - 100) + 'px';
-    balloon.style.left = Math.random() * (window.innerWidth - 50) + 'px';
+    // Initialize balloons
+    function createBalloons() {
+      for (let i = 0; i < numberOfBalloons; i++) {
+        const balloon = document.createElement('div');
+        balloon.classList.add('balloon');
+        balloon.style.backgroundColor = getRandomColor();
+        balloon.style.top = Math.random() * (window.innerHeight - 100) + 'px';
+        balloon.style.left = Math.random() * (window.innerWidth - 50) + 'px';
+        balloon.id = 'balloon' + (i + 1);
+        document.body.appendChild(balloon);
+        balloons.push(balloon);
 
-    // Move each balloon continuously
-    moveBalloon(balloon);
+        moveBalloon(balloon);
+        balloon.addEventListener('click', popBalloon);
+      }
+    }
 
-    // Add click event to pop the balloon
-    balloon.addEventListener('click', popBalloon);
-  });
-}
+    function startGame() {
+      startTime = Date.now(); // Record the start time of the game
+      createBalloons(); // Create balloons
+    }
+
+    function getRandomColor() {
+      const colors = ['red', 'yellow', 'green', 'blue', 'purple', 'orange', 'pink', 'brown', 'cyan', 'magenta'];
+      return colors[Math.floor(Math.random() * colors.length)];
+    }
 
 // Function to move balloons
 function moveBalloon(balloon) {
@@ -80,6 +98,12 @@ function endGame() {
   const timeTakenElement = document.getElementById('timeTaken');
   timeTakenElement.textContent = timeTaken;
   gameOverMessage.style.display = 'block';
+
+  if (!highScore || timeTaken < highScore) {
+    highScore = timeTaken;
+    localStorage.setItem('highScore', highScore);
+    highScoreElement.textContent = highScore;
+  }
 }
 
 // Start the game on page load
