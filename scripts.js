@@ -79,6 +79,9 @@ function popBalloon(event) {
   balloon.style.display = 'none'; // Hide balloon
   poppedBalloons++; // Increment popped balloons count
 
+  //Play the popping sound
+  popSound.play();
+
   // Speed up remaining balloons
   speedMultiplier += 0.5;
 
